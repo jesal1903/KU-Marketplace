@@ -53,14 +53,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const keyword = this.value.toLowerCase();
       const products = document.querySelectorAll(".product-card");
 
-      // Filter current page products
       products.forEach(card => {
         const name = card.querySelector("h3")?.textContent.toLowerCase() || "";
         const desc = card.querySelector("p")?.textContent.toLowerCase() || "";
         card.style.display = name.includes(keyword) || desc.includes(keyword) ? "block" : "none";
       });
 
-      // Redirect by keyword on Enter
       if (event.key === "Enter") {
         if (keyword.includes("textbook")) {
           window.location.href = "index.html";
@@ -95,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // Prevent dummy form submission
+  // Prevent dummy form submission (Post Form)
   const postForm = document.getElementById("postForm");
   if (postForm) {
     postForm.onsubmit = (e) => {
@@ -103,5 +101,38 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Post functionality is disabled in this static version. Please add items manually in HTML.");
       document.getElementById("postItemModal").style.display = "none";
     };
+  }
+
+  // LOGIN FUNCTION
+  const loginForm = document.getElementById("loginForm");
+  if (loginForm) {
+    loginForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      fetch("https://ku-marketplace.onrender.com/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.token) {
+          alert("Login successful!");
+          localStorage.setItem("token", data.token);
+          window.location.href = "index.html";
+        } else {
+          alert(data.message || "Login failed.");
+        }
+      })
+      .catch(err => {
+        console.error("Login error:", err);
+        alert("Server error.");
+      });
+    });
   }
 });
